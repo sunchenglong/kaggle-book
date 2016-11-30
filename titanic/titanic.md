@@ -1,6 +1,7 @@
 # 泰坦尼克号：灾难预测
 
-## 题目连接
+## 题目链接 
+https://www.kaggle.com/c/titanic
 
 ## 题目描述
 
