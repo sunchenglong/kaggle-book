@@ -6,3 +6,29 @@
 
  
 ## 数据描述
+
+| | |
+
+PassengerID
+
+Survived(存活与否)
+
+Pclass（客舱等级）
+
+Name（姓名）
+
+Sex（性别）
+
+Age（年龄）
+
+SibSp（亲戚和配偶在船数量）
+
+Parch（父母孩子的在船数量）
+
+Ticket（票编号）
+
+Fare（价格）
+
+Cabin（客舱位置）
+
+Embarked（上船的港口编号）
