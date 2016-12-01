@@ -3,3 +3,5 @@
 * [简介](README.md)
 * [Titanic: Machine Learning from Disaster](titanic/titanic.md)
 * [Display Advertising Challenge](criteo-display-ad-challenge/criteo-display-ad-challenge.md)
+    * [FFM算法实现](criteo-display-ad-challenge/ffm算法实现.md)
+
