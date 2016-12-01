@@ -15,8 +15,21 @@ https://www.kaggle.com/c/criteo-display-ad-challenge
 
 详细的英文介绍在[data/readme.txt](data/readme.txt)中。
 
-数据一共有1+13+26
+数据一共有13+26列, 前23列
+
 ## 评价标准
+![image](img/logloss.png)
+![image](img/logloss_a.png)
+```python
+import scipy as sp
+def logloss(act, pred):
+    epsilon = 1e-15
+    pred = sp.maximum(epsilon, pred)
+    pred = sp.minimum(1-epsilon, pred)
+    ll = sum(act*sp.log(pred) + sp.subtract(1,act)*sp.log(sp.subtract(1,pred)))
+    ll = ll * -1.0/len(act)
+    return ll
+```
 
 ## 提交格式
 
