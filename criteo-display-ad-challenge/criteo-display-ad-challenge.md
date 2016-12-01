@@ -20,6 +20,7 @@ https://www.kaggle.com/c/criteo-display-ad-challenge
 ## 评价标准
 ![image](img/logloss.png)
 ![image](img/logloss_a.png)
+
 ```python
 import scipy as sp
 def logloss(act, pred):
