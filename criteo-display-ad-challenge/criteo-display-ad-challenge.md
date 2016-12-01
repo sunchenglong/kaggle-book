@@ -18,6 +18,7 @@ https://www.kaggle.com/c/criteo-display-ad-challenge
 数据一共有13+26列, 前23列
 
 ## 评价标准
+
 ![image](img/logloss.png)
 ![image](img/logloss_a.png)
 
