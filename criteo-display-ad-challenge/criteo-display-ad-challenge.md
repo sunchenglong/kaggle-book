@@ -13,6 +13,9 @@ https://www.kaggle.com/c/criteo-display-ad-challenge
 
 ## 数据内容
 
+详细的英文介绍在[data/readme.txt](data/readme.txt)中。
+
+数据一共有1+13+26
 ## 评价标准
 
 ## 提交格式
