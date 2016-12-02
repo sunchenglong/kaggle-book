@@ -13,9 +13,17 @@ https://www.kaggle.com/c/criteo-display-ad-challenge
 
 ## 文件内容
 
-train.csv - The training set consists of a portion of Criteo's traffic over a period of 7 days. Each row corresponds to a display ad served by Criteo. Positive (clicked) and negatives (non-clicked) examples have both been subsampled at different rates in order to reduce the dataset size. The examples are chronologically ordered.
-test.csv - The test set is computed in the same way as the training set but for events on the day following the training period.
-random_submission.csv - A sample submission file in the correct format.
+* train.csv
+
+  是Criteo这个公司7天的数据，字段的含义在下面介绍，T1-T13列正数为有点击，0或者负数表示没有点击。
+
+* test.csv
+
+  测试集文件。
+
+* random_submission.csv
+
+  一个提交的例子。
 
 ## 字段含义
 
