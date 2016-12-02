@@ -1,5 +1,7 @@
 # 比赛排名第一的解法（来自3idiots）
 
+这篇文章主要翻译于作者的PPT。
+
 ## 整理资料来源
 
 * kaggle论坛
@@ -43,8 +45,16 @@ NTU CSIE MLGroup
 
 总体的实现方案如上图所示，CSV表示输入的数据文件，
 Pre-A
+
+Pre-B
+
+
+
 Calib(calibrate)表示标准化
 Rst(result)最后的输出文件
+
+## 特征工程
+
 
 
 
