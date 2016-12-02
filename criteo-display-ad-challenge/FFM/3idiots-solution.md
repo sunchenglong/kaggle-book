@@ -18,6 +18,14 @@
 
   http://www.csie.ntu.edu.tw/~r01922136/libffm/
 
-* libffm
+* libffm 源码
+
+  https://github.com/guestwalk/libffm
+
+# 作者
+
+YuChin Juan, Yong Zhuang, and Wei-Sheng Chin
+
+NTU CSIE MLGroup
 
 ## FFM算法
