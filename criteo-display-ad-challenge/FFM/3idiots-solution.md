@@ -8,7 +8,7 @@
 
   https://www.kaggle.com/c/criteo-display-ad-challenge/forums/t/10555/3-idiots-solution-libffm
 
-* 实现方法的PPT
+  * 实现方法的PPT
 
   http://www.csie.ntu.edu.tw/~r01922136/kaggle-2014-criteo.pdf
 
@@ -46,11 +46,46 @@ NTU CSIE MLGroup
 总体的实现方案如上图所示，CSV表示输入的数据文件，
 Pre-A
 
+目标是：为GBDT生成特征
+* 包括所有数值型特征(13个特征)
+* 类型特征(在one-hot编码后)
+
+Purpose: generate features for GBDT.
+• All numerical data are included. (13 features)
+• Categorical features (after one-hot encoding) appear more
+than 4 million times are also included. (26 features)
+
+
+
+GBDT
+
+
+Purpose: generate GBDT features.
+• We use trees in GBDT to generate features.
+• 30 trees with depth 7 are used.
+• 30 features are generated for each impression.
+• This approach is proposed by Xinran He et al. at Facebook.
+• The imlementation of GBDT is base on Algorithm 5 in the
+following slides:
+http://statweb.stanford.edu/ ~ jhf/ftp/trebst.pdf
+
+
 Pre-B
 
-
+Purpose: generate features for FFM.
+• Numerical features (I1-I13) greater than 2 are transformed by
+v ← blog(v) 2 c.
+• Categorical features (C1-C26) appear less than 10 times are
+transformed into a sepcial value.
+• GBDT features are directly included.
+• These three groups of features are hashed into 1M-dimension
+by hashing trick.
+• Each impression has 13 (numerical) + 26 (categorical) + 30
+(GBDT) = 69 features.
 
 Calib(calibrate)表示标准化
+
+
 Rst(result)最后的输出文件
 
 ## 特征工程
