@@ -183,7 +183,7 @@ with open(args['dense_path'], 'w') as f_d, open(args['sparse_path'], 'w') as f_s
         f_d.write(row['Label'] + ' ' + ' '.join(feats) + '\n')
 
         cat_feats = set()
-        # 26个类别特征，使用稀疏表示方式，将
+        # 26个类别特征，这一位有知，使用稀疏表示方式
         for j in range(1, 27):
             field = 'C{0}'.format(j)
             key = field + '-' + row[field]
