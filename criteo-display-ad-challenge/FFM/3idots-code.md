@@ -53,6 +53,7 @@ clean:
 
 import subprocess, sys, os, time
 
+# 进程的数量(伪多线程)
 NR_THREAD = 1
 
 start = time.time()
@@ -103,5 +104,94 @@ run.py实现的流程图如下图所示：
 
 但是Pre-A与Pre-B的实现是[pre-a.py](src/converters/pre-a.py)与[pre-b.py](src/converters/pre-b.py),在run.py中使用[parallelizer-a.py](src/converters/parallelizer-a.py)与[parallelizer-b.py](src/converters/parallelizer-b.py)进行驱动，目的是数据预处理使用“多线程”(其实使用的subprocess模块进行的实现)，加速数据处理和特征提取。
 
+
+## 类别特征预处理 [count.py](src/utils/count.py)
+
+```python
+#!/usr/bin/env python3
+
+import argparse, csv, sys, collections
+
+from common import *
+
+if len(sys.argv) == 1:
+    sys.argv.append('-h')
+
+parser = argparse.ArgumentParser()
+parser.add_argument('csv_path', type=str)
+args = vars(parser.parse_args())
+
+counts = collections.defaultdict(lambda : [0, 0, 0])
+
+for i, row in enumerate(csv.DictReader(open(args['csv_path'])), start=1):
+    label = row['Label']
+    for j in range(1, 27):
+        #只处理C开头的类别特征
+        field = 'C{0}'.format(j)
+        value = row[field]
+        if label == '0':
+            counts[field+','+value][0] += 1
+        else:
+            counts[field+','+value][1] += 1
+        counts[field+','+value][2] += 1
+    if i % 1000000 == 0:
+        sys.stderr.write('{0}m\n'.format(int(i/1000000)))
+
+print('Field,Value,Neg,Pos,Total,Ratio')
+for key, (neg, pos, total) in sorted(counts.items(), key=lambda x: x[1][2]):
+    # 类别特征出现小于10个，忽略掉
+    if total < 10:
+        continue
+    ratio = round(float(pos)/total, 5)
+    print(key+','+str(neg)+','+str(pos)+','+str(total)+','+str(ratio))
+```
+
+
 ## 并发数据预处理Pre-A与Pre-B的实现
-[parallelizer-a.py](src/converters/parallelizer-a.py)
+[parallelizer-a.py](src/converters/parallelizer-a.py),[parallelizer-b.py](src/converters/parallelizer-b.py)这两个文件实现的方式大致相同，作者使用了subprocess开了多个子进程,完成job,过程类似与map的实现方式。
+
+
+
+```python
+#!/usr/bin/env python3
+
+import argparse, csv, sys
+
+from common import *
+
+if len(sys.argv) == 1:
+    sys.argv.append('-h')
+
+parser = argparse.ArgumentParser()
+parser.add_argument('csv_path', type=str)
+parser.add_argument('dense_path', type=str)
+parser.add_argument('sparse_path', type=str)
+args = vars(parser.parse_args())
+
+#这里面的类别特征是足够的密集（不稀疏），他们在数据集中出现均超过了400万次，所以我们在GBDT的训练中带有这些特征，这里应该为作者数据分析的结果
+target_cat_feats = ['C9-a73ee510', 'C22-', 'C17-e5ba7672', 'C26-', 'C23-32c7478e', 'C6-7e0ccccf', 'C14-b28479f6', 'C19-21ddcdc9', 'C14-07d13a8f', 'C10-3b08e48b', 'C6-fbad5c96', 'C23-3a171ecb', 'C20-b1252a9d', 'C20-5840adea', 'C6-fe6b92e5', 'C20-a458ea53', 'C14-1adce6ef', 'C25-001f3601', 'C22-ad3062eb', 'C17-07c540c4', 'C6-', 'C23-423fab69', 'C17-d4bb7bd8', 'C2-38a947a1', 'C25-e8b83407', 'C9-7cc72ec2']
+
+with open(args['dense_path'], 'w') as f_d, open(args['sparse_path'], 'w') as f_s:
+    for row in csv.DictReader(open(args['csv_path'])):
+        feats = []
+        # 13个数字特征，如果没有填入-10,否则这个数字即为特征的值
+        for j in range(1, 14):
+            val = row['I{0}'.format(j)]
+            if val == '':
+                val = -10
+            feats.append('{0}'.format(val))
+        f_d.write(row['Label'] + ' ' + ' '.join(feats) + '\n')
+
+        cat_feats = set()
+        # 26个类别特征，使用稀疏表示方式，将
+        for j in range(1, 27):
+            field = 'C{0}'.format(j)
+            key = field + '-' + row[field]
+            cat_feats.add(key)
+
+        feats = []
+        for j, feat in enumerate(target_cat_feats, start=1):
+            if feat in cat_feats:
+                feats.append(str(j))
+        f_s.write(row['Label'] + ' ' + ' '.join(feats) + '\n')
+```
