@@ -8,7 +8,7 @@
 
   https://www.kaggle.com/c/criteo-display-ad-challenge/forums/t/10555/3-idiots-solution-libffm
 
-  * 实现方法的PPT
+* 实现方法的PPT
 
   http://www.csie.ntu.edu.tw/~r01922136/kaggle-2014-criteo.pdf
 
@@ -35,45 +35,40 @@ NTU CSIE MLGroup
 
 ## 实现概述
 
-数据总共有13列数值特征，26列类别特征(hashcode),作者首先将26列类别特征放入gbdt中训练30棵高度均为7的树，每棵树作为一个特征，共有30个特征，特征的值是最后显现出值的叶子节点的序号，即这个值为0-255，作者最后将13+26+30一共69个特征的标签经过hash处理，然后与10^6取模做为特征的索引，值仍用原来特征的值，获取到10^6个one-hot编码后的稀疏特征矩阵，放入FFM模型中进行训练。
+数据总共有13列数值特征，26列类别特征(hashcode),作者首先将13列数值特征与26列类别特征(选取出现的比例非常高的一些类型作为特征，使用one-hot进行编码)放入gbdt中训练30棵高度均为7的树，每棵树作为一个特征，共有30个特征，特征的值是最后显现出值的叶子节点的序号，即这个值为0-255，作者最后将13+26+30一共69个特征的标签经过hash处理，然后与10^6取模做为特征的索引，值仍用原来特征的值，获取到10^6个one-hot编码后的稀疏特征矩阵，放入FFM模型中进行训练。
 
 
 ## 小规模数据
 
 ![img](../img/3idiotsDataset.png)
 
-作者为了演示算法的效果，采样了一份小数据集，可以看到如之前所述，数据第一列为标签，1代表点击，0代表未点击，最后？表示需要预测0-1的一个点击的概率值，I1-I13表示。。。//Todo
+作者为了演示算法的效果，采样了一份小数据集，可以看到如之前所述，数据第一列为标签，1代表点击，0代表未点击，最后?表示需要预测0-1的一个点击的概率值，I1-I13表示13个数值型特征，C1-C26表示26个类别特征，使用32位hashcode表示。
+
+小规模数据中训练数据大约45Mb,测试数据大约6Mb,特征数据经过one-hot编码后大约33Mb。
+
 
 ## 技术路线
 
 ![img](../img/3idiot.png)
 
 总体的实现方案如上图所示，CSV表示输入的数据文件，
-Pre-A
-
-目标是：为GBDT生成特征
+### Pre-A
+目标：为GBDT生成特征的算法提供训练的文件
+使用的特征包括：
 * 包括所有数值型特征(13个特征)
 * 类型特征(如果在one-hot编码后出现超过400万个特征)(26个特征)
 
 
+### GBDT
 
-
-GBDT
-
-目标：生成GBDT特征
+目标：生成GBDT特征30个
 * 在GBDT中使用树生成特征
 * 使用的树是深度为7的30个树
-* 生成的是这30棵树每棵最显著的特征，也就是生成了30个特征
+* 生成的是这30棵树每棵最显著的叶子节点的序号，也就是生成了30个特征，特征值是每棵树的叶子节点所在的序号
 * 这个方法是Xinran He et al发表的(Facebook).
-
-Purpose: generate GBDT features.
-• We use trees in GBDT to generate features.
-• 30 trees with depth 7 are used.
-• 30 features are generated for each impression.
-• This approach is proposed by  at Facebook.
-• The imlementation of GBDT is base on Algorithm 5 in the
-following slides:
-http://statweb.stanford.edu/ ~ jhf/ftp/trebst.pdf
+* GBDT的实现方法在
+* GBDT的实现是基于下面这篇文章的Algorithm 5
+  http://statweb.stanford.edu/~jhf/ftp/trebst.pdf
 
 
 Pre-B
