@@ -49,24 +49,23 @@ clean:
 ## [run.py](src/run.py)
 
 ```python
-#!/usr/bin/env python3
-
-import subprocess, sys, os, time
 
 # 进程的数量(伪多线程)
 NR_THREAD = 1
 
 start = time.time()
 
+#类别特征处理
 cmd = './utils/count.py tr.csv > fc.trva.t10.txt'
 subprocess.call(cmd, shell=True)
-
+#训练集执行pre-a
 cmd = 'converters/parallelizer-a.py -s {nr_thread} converters/pre-a.py tr.csv tr.gbdt.dense tr.gbdt.sparse'.format(nr_thread=NR_THREAD)
 subprocess.call(cmd, shell=True)
-
+#测试集执行pre-a
 cmd = 'converters/parallelizer-a.py -s {nr_thread} converters/pre-a.py te.csv te.gbdt.dense te.gbdt.sparse'.format(nr_thread=NR_THREAD)
 subprocess.call(cmd, shell=True)
 
+#训练集与测试集运行gbdt提取特征
 cmd = './gbdt -t 30 -s {nr_thread} te.gbdt.dense te.gbdt.sparse tr.gbdt.dense tr.gbdt.sparse te.gbdt.out tr.gbdt.out'.format(nr_thread=NR_THREAD)
 subprocess.call(cmd, shell=True)
 
@@ -108,20 +107,6 @@ run.py实现的流程图如下图所示：
 ## 类别特征预处理 [count.py](src/utils/count.py)
 
 ```python
-#!/usr/bin/env python3
-
-import argparse, csv, sys, collections
-
-from common import *
-
-if len(sys.argv) == 1:
-    sys.argv.append('-h')
-
-parser = argparse.ArgumentParser()
-parser.add_argument('csv_path', type=str)
-args = vars(parser.parse_args())
-
-counts = collections.defaultdict(lambda : [0, 0, 0])
 
 for i, row in enumerate(csv.DictReader(open(args['csv_path'])), start=1):
     label = row['Label']
@@ -153,28 +138,13 @@ for key, (neg, pos, total) in sorted(counts.items(), key=lambda x: x[1][2]):
 
 
 ```python
-#!/usr/bin/env python3
-
-import argparse, csv, sys
-
-from common import *
-
-if len(sys.argv) == 1:
-    sys.argv.append('-h')
-
-parser = argparse.ArgumentParser()
-parser.add_argument('csv_path', type=str)
-parser.add_argument('dense_path', type=str)
-parser.add_argument('sparse_path', type=str)
-args = vars(parser.parse_args())
-
 #这里面的类别特征是足够的密集（不稀疏），他们在数据集中出现均超过了400万次，所以我们在GBDT的训练中带有这些特征，这里应该为作者数据分析的结果
 target_cat_feats = ['C9-a73ee510', 'C22-', 'C17-e5ba7672', 'C26-', 'C23-32c7478e', 'C6-7e0ccccf', 'C14-b28479f6', 'C19-21ddcdc9', 'C14-07d13a8f', 'C10-3b08e48b', 'C6-fbad5c96', 'C23-3a171ecb', 'C20-b1252a9d', 'C20-5840adea', 'C6-fe6b92e5', 'C20-a458ea53', 'C14-1adce6ef', 'C25-001f3601', 'C22-ad3062eb', 'C17-07c540c4', 'C6-', 'C23-423fab69', 'C17-d4bb7bd8', 'C2-38a947a1', 'C25-e8b83407', 'C9-7cc72ec2']
 
 with open(args['dense_path'], 'w') as f_d, open(args['sparse_path'], 'w') as f_s:
     for row in csv.DictReader(open(args['csv_path'])):
         feats = []
-        # 13个数字特征，如果没有填入-10,否则这个数字即为特征的值
+        # 13个数字特征，如果没有填入-10,否则这个数字即为特征的值，记为dense文件
         for j in range(1, 14):
             val = row['I{0}'.format(j)]
             if val == '':
@@ -183,7 +153,7 @@ with open(args['dense_path'], 'w') as f_d, open(args['sparse_path'], 'w') as f_s
         f_d.write(row['Label'] + ' ' + ' '.join(feats) + '\n')
 
         cat_feats = set()
-        # 26个类别特征，这一位有知，使用稀疏表示方式
+        # 26个类别特征，这一位有值记为1否则记为0，使用稀疏表示方式，记为sparse文件
         for j in range(1, 27):
             field = 'C{0}'.format(j)
             key = field + '-' + row[field]
@@ -194,4 +164,61 @@ with open(args['dense_path'], 'w') as f_d, open(args['sparse_path'], 'w') as f_s
             if feat in cat_feats:
                 feats.append(str(j))
         f_s.write(row['Label'] + ' ' + ' '.join(feats) + '\n')
+```
+
+## gbdt
+
+
+
+
+## pre-b生成ffm训练需要的文件形式 [pre-b.py](src/utils/pre-b.py)
+ffm训练数据的文件格式是:
+```
+<label> <field1>:<index1>:<value1> <field2>:<index2>:<value2> ...
+```
+即在每一行，第一列是标签，后面每一列由":"分割出三个字段，分别是字段名，索引名和值。
+
+
+![img](../img/hashingTrick.png)
+
+```python
+#
+def gen_hashed_fm_feats(feats, nr_bins):
+    feats = ['{0}:{1}:1'.format(field-1, hashstr(feat, nr_bins)) for (field, feat) in feats]
+    return feats
+
+frequent_feats = read_freqent_feats(args['threshold'])
+
+with open(args['out_path'], 'w') as f:
+    for row, line_gbdt in zip(csv.DictReader(open(args['csv_path'])), open(args['gbdt_path'])):
+        feats = []
+
+        for feat in gen_feats(row):
+            field = feat.split('-')[0]
+            type, field = field[0], int(field[1:])
+            if type == 'C' and feat not in frequent_feats:
+                feat = feat.split('-')[0]+'less'
+            if type == 'C':
+                field += 13
+            feats.append((field, feat))
+
+        for i, feat in enumerate(line_gbdt.strip().split()[1:], start=1):
+            field = i + 39
+            feats.append((field, str(i)+":"+feat))
+
+        feats = gen_hashed_fm_feats(feats, args['nr_bins'])
+        f.write(row['Label'] + ' ' + ' '.join(feats) + '\n')
+```
+
+
+
+## 结果标准化
+作者经过各种调参发现，整体的预测和真实结果有一定的偏差，将预测结果减少0.003，log损失可以减少0.0001
+```python
+with open(args['dst_path'], 'w') as f:
+    for line in open(args['src_path']):
+        prediction = float(line.strip())
+        if prediction > 0.0035:
+            prediction -= 0.003
+        f.write('{0}\n'.format(prediction))
 ```

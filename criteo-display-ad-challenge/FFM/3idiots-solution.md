@@ -33,6 +33,11 @@ NTU CSIE MLGroup
 在这次比赛中，在公共排行榜(public leaderboards)的分数为0.44488在私有排行榜(private leaderboards)上的排名是0.44479。
 
 
+## 实现概述
+
+数据总共有13列数值特征，26列类别特征(hashcode),作者首先将26列类别特征放入gbdt中训练30棵高度均为7的树，每棵树作为一个特征，共有30个特征，特征的值是最后显现出值的叶子节点的序号，即这个值为0-255，作者最后将13+26+30一共69个特征的标签经过hash处理，然后与10^6取模做为特征的索引，值仍用原来特征的值，获取到10^6个one-hot编码后的稀疏特征矩阵，放入FFM模型中进行训练。
+
+
 ## 小规模数据
 
 ![img](../img/3idiotsDataset.png)
@@ -48,23 +53,24 @@ Pre-A
 
 目标是：为GBDT生成特征
 * 包括所有数值型特征(13个特征)
-* 类型特征(在one-hot编码后)
+* 类型特征(如果在one-hot编码后出现超过400万个特征)(26个特征)
 
-Purpose: generate features for GBDT.
-• All numerical data are included. (13 features)
-• Categorical features (after one-hot encoding) appear more
-than 4 million times are also included. (26 features)
 
 
 
 GBDT
 
+目标：生成GBDT特征
+* 在GBDT中使用树生成特征
+* 使用的树是深度为7的30个树
+* 生成的是这30棵树每棵最显著的特征，也就是生成了30个特征
+* 这个方法是Xinran He et al发表的(Facebook).
 
 Purpose: generate GBDT features.
 • We use trees in GBDT to generate features.
 • 30 trees with depth 7 are used.
 • 30 features are generated for each impression.
-• This approach is proposed by Xinran He et al. at Facebook.
+• This approach is proposed by  at Facebook.
 • The imlementation of GBDT is base on Algorithm 5 in the
 following slides:
 http://statweb.stanford.edu/ ~ jhf/ftp/trebst.pdf
