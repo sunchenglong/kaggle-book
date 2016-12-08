@@ -10,6 +10,7 @@ https://www.gitbook.com/book/sunchenglong/kaggle-book/details
 ## Latex支持
 [book.json](book.json)中配置了katex插件，支持Latex语法。
 
+
 -----------------
 ## 简介
 
@@ -23,7 +24,19 @@ Kaggle是一个顶级的机器学习竞赛的平台...
 
 **阅读过程中遇到任何问题，可以以issue的形式提出来，这样可以帮助其他读者来发现、解决这个问题，也可以直接提pull request，贡献您的智慧。**
 
+
 ## 贡献者
 
+| github |
+| ------------- |
+| [sunchenglong](https://github.com/sunchenglong) |
+
+按字典序
+
+## 如何贡献
+  * 1.登录github,并且fork这个项目
+  * 2.从自己的github的这个repository上clone代码
+  * 3.修改文件后本地命令行或者git工具执行git add -A, git commit -m"...message...", git push
+  * 4.在github的界面上生成pull request
 
 ## 欢迎贡献~
