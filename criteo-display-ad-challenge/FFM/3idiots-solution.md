@@ -31,7 +31,7 @@ YuChin Juan, Yong Zhuang, and Wei-Sheng Chin
 NTU CSIE MLGroup
 
 在这次比赛中，在公共排行榜(public leaderboards)的分数为0.44488在私有排行榜(private leaderboards)上的排名是0.44479。
-
+分数为log损失函数,分数越小排名越高。
 
 ## 实现概述
 
@@ -55,8 +55,8 @@ NTU CSIE MLGroup
 ### Pre-A
 目标：为GBDT生成特征的算法提供训练的文件
 使用的特征包括：
-* 包括所有数值型特征(13个特征)
-* 类型特征(如果在one-hot编码后出现超过400万个特征)(26个特征)
+* 包括所有数值型特征(13个特征)，正常编码
+* 类型特征(如果在one-hot编码后出现超过400万个特征)(26个特征)，使用稀疏矩阵编码
 
 
 ### GBDT
@@ -70,24 +70,19 @@ NTU CSIE MLGroup
 * GBDT的实现是基于下面这篇文章的Algorithm 5
   http://statweb.stanford.edu/~jhf/ftp/trebst.pdf
 
+### Pre-B
 
-Pre-B
+目标: 为FFM算法生成特征
+* 数值特征(I1-I13)如果超过2根据下面的公式进行转换,根据代码可以看到，这个公式是超过2的数字求自然对数，然后平方，最后向上取整, 这个值和特征所在的列(比如第12列表示为I12)组合生成特征名称, 如果值为3那么特征的名称为I12-3,这就是one-hot的一个特征,含义就是如果这个样本在第I12位置上值为3,I12-3这个特征值为1,否则为0
+![img](../img/num.png)
+* 类别特征(C1-C26)如过出现少于10次的被统一的定义为一个特殊的值,例如C9列出现了一个值为a73ee510标签，我们将C9-a73ee510作为一个特征,这就是one-hot的一个特征,含义就是如果这个样本在第C9位置上值为a73ee510,C9-a73ee510这个特征值为1,否则为0
+* GBDT的30个特征直接被引用,为一个1-255的正数,例如第12棵树的65个叶子节点为显性，那么12:65就是one-hot的一个特征,含义就是如果这个样本在GBDT特征12的位置上值为65,12:65这个特征值为1,否则为0
+* 以上的13 + 26 + 30个特征(one-hot之前),如果直接进行one-hot会非常的麻烦(特征对齐就很麻烦),作者使用了hash技巧,将刚才所述的3种特征的名称进行hash,然后与10^6取余(这个数字是1百万,对类型特征C1-C6进行one-hot编码特征大约400万,作者对出现少于10次的特征进行规约,应该是已经把特征降到了100万以内,所以此处使用这个数字,此处推断还未考证),这样特征空间的大小为10^6,所有的特征值为0或者1,表示有或者没有出现。
 
-Purpose: generate features for FFM.
-• Numerical features (I1-I13) greater than 2 are transformed by
-v ← blog(v) 2 c.
-• Categorical features (C1-C26) appear less than 10 times are
-transformed into a sepcial value.
-• GBDT features are directly included.
-• These three groups of features are hashed into 1M-dimension
-by hashing trick.
-• Each impression has 13 (numerical) + 26 (categorical) + 30
-(GBDT) = 69 features.
+### Calib(calibrate) 标准化
+作者经过各种调参发现，整体的预测和真实结果有一定的偏差，将预测结果(点击的概率)减少0.003，log损失可以减少0.0001
 
-Calib(calibrate)表示标准化
-
-
-Rst(result)最后的输出文件
+### Rst(result) 输出文件
 
 ## 特征工程
 
