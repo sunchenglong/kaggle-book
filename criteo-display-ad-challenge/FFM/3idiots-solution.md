@@ -1,4 +1,4 @@
-# GBDT + FFM（排名第一,来自3idiots）
+# GBDT+FFM解法（排名第一,来自3idiots）
 
 这篇文章主要翻译于作者的PPT。
 
@@ -100,7 +100,7 @@ NTU CSIE MLGroup
 
 ## 实验运行情况
 
-双6核CPU环境下的运行状况，所有的进程都是并行的, 并行的实现在[3diots代码详解](3idiots-code.md)中
+双6核CPU环境下的运行状况，所有的进程都是并行的, 并行的实现在[GDBT+FFM代码详解](3idiots-code.md)中
 ![img](../img/3idiotRuntime.png)
 
 ## FFM算法介绍
