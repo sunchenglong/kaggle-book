@@ -1,4 +1,4 @@
-# 3idiots实现代码详解
+# GBDT+FFM源码详解(排名第一,来自3idiots)
 
 代码地址：  https://github.com/guestwalk/kaggle-2014-criteo
 
