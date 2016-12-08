@@ -1,3 +1,15 @@
 {
-
+  "description" : "Kaggle题解",
+  "language" : "zh-hans",
+  "plugins": [
+      "splitter",
+      "katex",
+      "github",
+      "toggle-chapters"
+  ]
+  "pluginsConfig": {
+    "github": {
+        "url": "https://github.com/sunchenglong/kaggle-book"
+      }
+  }
 }
