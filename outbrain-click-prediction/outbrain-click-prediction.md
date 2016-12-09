@@ -66,3 +66,20 @@ documents_topics.csv, documents_entities.csv, and documents_categories.csv all p
 Privacy Reminder
 
 Outbrain is releasing 2 Billion page views and 16,900,000 clicks of 700 Million unique users, across 560 sites. The data is anonymized. Please remember that participants are prohibited from de-anonymizing or reverse engineering data or combining the data with other publicly available information. Outbrain does not collect or hold PII (personally identifiable information), and the user identifiers we are releasing here are obscured. To protect its publisher partners, Outbrain is not releasing URLs of viewed or clicked stories, but rather anonymized document and site identifiers. The task at hand is click prediction, and by downloading the dataset, participants agree to use the data for that task alone, and will not attempt to reverse engineer the mapping from document, site, and user identifiers to URLs, site names or actual users.
+
+
+
+log
+When {% math %}a \ne 0{% endmath %}, there are two solutions to {% math %}(ax^2 + bx + c = 0){% endmath %} and they are {% math %}x = {-b \pm \sqrt{b^2-4ac} \over 2a}.{% endmath %}
+
+$$ \int_{-\infty}^\infty g(x) dx $$
+
+$$ 1 \over 3 $$
+
+
+
+When {% math %}a \ne 0{% endmath %}, there are two solutions to {% math %}(ax^2 + bx + c = 0){% endmath %} and they are {% math %}x = {-b \pm \sqrt{b^2-4ac} \over 2a}.{% endmath %}
+
+$$ \int_{-\infty}^\infty g(x) dx $$
+
+$$ 1 \over 3 $$
