@@ -40,3 +40,8 @@ Kaggle是一个顶级的机器学习竞赛的平台...
   * 4.在github的界面上生成pull request
 
 ## 欢迎贡献~
+
+## 感谢以下开源项目对本项目的帮助
+[leetcode题解](https://github.com/soulmachine/leetcode)
+[Katex](https://github.com/Khan/KaTeX)
+[gitbook-use](https://github.com/zhangjikai/gitbook-use)

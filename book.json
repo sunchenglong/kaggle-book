@@ -5,11 +5,27 @@
       "splitter",
       "katex",
       "github",
-      "toggle-chapters"
+      "toggle-chapters",
+      "toc",
+      "tbfed-pagefooter",
+      "edit-link",
+      "include-codeblock"
   ],
   "pluginsConfig" : {
     "github": {
         "url": "https://github.com/sunchenglong/kaggle-book"
+      },
+    "toc": {
+        "addClass": true,
+        "className": "toc"
+      },
+    "tbfed-pagefooter": {
+        "modify_label": "该文件修订时间：",
+        "modify_format": "YYYY-MM-DD HH:mm:ss"
+      },
+      "edit-link": {
+        "base": "https://github.com/sunchenglong/kaggle-book/edit/master",
+        "label": "Edit This Page"
       }
   }
 }
