@@ -22,7 +22,9 @@ Each user in the dataset is represented by a unique id (uuid). A person can view
 
 File Descriptions
 
-page_views.csv is a the log of users visiting documents. To save disk space, the timestamps in the entire dataset are relative to the first time in the dataset. If you wish to recover the actual epoch time of the visit, add 1465876799998 to the timestamp.
+#### page_views.csv
+
+is a the log of users visiting documents. To save disk space, the timestamps in the entire dataset are relative to the first time in the dataset. If you wish to recover the actual epoch time of the visit, add 1465876799998 to the timestamp.
 
 uuid
 document_id
